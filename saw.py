@@ -53,10 +53,9 @@ def cmd_run(user, target, cmd, silent=True, user_pass=None):
 
     if r.status_code != 200:
         return r.content
-
-    returns = r.json()['return'][0]
-
-    return returns
+    else:
+        returns = r.json()['return'][0]
+        return returns
 
 def print_cmd_run(cmd):
     '''
