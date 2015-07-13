@@ -24,7 +24,7 @@ class user_session:
         else:
             data = {'username': self.user_name, 'password': user_pass, 'eauth': 'pam'}
 
-        r = requests.post('https://den-prod-salt01.clickbank.local/login', data=data)
+        r = requests.post('http://salt-master/login', data=data)
 
         try:
             self.auth_token = r.headers['x-auth-token']
@@ -49,26 +49,28 @@ def cmd_run(user, target, cmd, silent=True, user_pass=None):
     else:
         data = {'username': user, 'tgt': target, 'client': 'local', 'eauth': 'pam', 'password': user_pass, 'fun': 'cmd.run', 'arg': cmd }
 
-    r = requests.post("https://den-prod-salt01.clickbank.local/run", data=data)
-    returns = r.json()['return'][0]
+    r = requests.post("http://salt-master/run", data=data)
 
     if r.status_code != 200:
-        print('Status code not 200, something probably went wrong.')
-        print(r.status_code)
-        pprint(r.json())
-    else:
-        return returns
+        return r.content
+
+    returns = r.json()['return'][0]
+
+    return returns
 
 def print_cmd_run(cmd):
     '''
     prints returned dict from cmd_run function
     '''
-    for minion in cmd:
-        print('*** ' + minion + ' ***\n')
-        print(cmd[minion] + '\n')
-        print('-' * 10 + '\n')
+    if type(cmd) == str:
+        print cmd
+    else:
+        for minion in cmd:
+            print('*** ' + minion + ' ***\n')
+            print(cmd[minion] + '\n')
+            print('-' * 10 + '\n')
 
-def get_minions(auth_token, url='https://den-prod-salt01.clickbank.local/minions'):
+def get_minions(auth_token, url='http://salt-master/minions'):
     '''
     returns dict of minions that were connected when function was run, uses
     x-auth-token header value for authentication.
@@ -88,7 +90,7 @@ def print_minions(minions):
         print('  Kernel release: %s\n') % minions[minion]['kernelrelease']
     print('-' * 10 + '\n')
 
-def run_state(user, target, state, url='https://den-prod-salt01.clickbank.local/run', pillar=None, user_pass=None):
+def run_state(user, target, state, url='http://salt-master/run', pillar=None, user_pass=None):
     '''
     runs a state.sls where target is the path to the state. pillar can be a string
     in the form of pillar='pillar={"value1": "string"}'.
