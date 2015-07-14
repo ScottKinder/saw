@@ -21,24 +21,24 @@ def main():
             print_minions(minions)
             break
         elif choice == '2':
-            command = raw_input('cmd.run to run: ')
-            target = raw_input('target: ')
+            command = raw_input('Command to run: ')
+            target = raw_input('Target: ')
             print
             if not user:
                 user = user_session()
-            returns = cmd_run(user.user_name, target, command)
+            cmdrun = cmd_run(user.user_name, target, command)
             print
-            print_cmd_run(returns)
+            print_cmd_run(cmdrun)
             break
         elif choice == '3':
-            state = raw_input('state to run: ')
-            target = raw_input('target: ')
+            state = raw_input('State to run: ')
+            target = raw_input('Target: ')
             print
             if not user:
                 user = user_session()
-            returns = run_state(user.user_name, target, state)
+            states = run_state(user.user_name, target, state)
             print
-            print_run_state(returns)
+            print_run_state(states)
             break
         elif choice == '4':
             break
