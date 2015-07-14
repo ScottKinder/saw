@@ -52,7 +52,7 @@ def cmd_run(user, target, cmd, silent=True, user_pass=None):
     r = requests.post("http://salt-master/run", data=data)
 
     if r.status_code != 200:
-        return r.content
+        return 'Auth or other error.'
     else:
         returns = r.json()['return'][0]
         return returns
@@ -108,21 +108,28 @@ def run_state(user, target, state, url='http://salt-master/run', pillar=None, us
             data = {'username': user, 'tgt': target, 'client': 'local', 'eauth': 'pam', 'password': user_pass, 'fun': 'state.sls', 'arg': [state] }
 
     r = requests.post(url, data=data)
-    results = r.json()['return'][0]
-    return results
+
+    if r.status_code != 200:
+        return 'Auth or other error.'
+    else:
+        results = r.json()['return'][0]
+        return results
 
 def print_run_state(state):
     '''
     prints dict from run_state function
     '''
-    for minion in state:
-        print('*** ' + minion + ' ***\n')
-        for item in state[minion]:
-            try:
-                comment = state[minion][item]['comment']
-                result = str(state[minion][item]['result'])
-                print('State: ' + item)
-                print('Comment: ' + comment)
-                print('Result: ' + result + '\n')
-            except:
-                print(state[minion][0] + '\n')
+    if type(state) == str:
+        print state
+    else:
+        for minion in state:
+            print('*** ' + minion + ' ***\n')
+            for item in state[minion]:
+                try:
+                    comment = state[minion][item]['comment']
+                    result = str(state[minion][item]['result'])
+                    print('State: ' + item)
+                    print('Comment: ' + comment)
+                    print('Result: ' + result + '\n')
+                except:
+                    print(state[minion][0] + '\n')
