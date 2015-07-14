@@ -1,3 +1,4 @@
+from pprint import pprint
 import os
 import sys
 sys.path.append(os.getcwd())
@@ -10,7 +11,8 @@ def main():
         print('1. View connected minions')
         print('2. Run command')
         print('3. Run state')
-        print('4. Exit\n\n')
+        print('4. Test targeting')
+        print('5. Exit\n\n')
         choice = raw_input('Enter your choice: ')
         if choice == '1':
             if not user:
@@ -41,6 +43,16 @@ def main():
             print_run_state(states)
             break
         elif choice == '4':
+            target = raw_input('Target: ')
+            print
+            if not user:
+                user = user_session()
+            if not user.auth_token:
+                user.set_auth_token()
+            test = test_target(user.auth_token, target)
+            print('\n' + test)
+            break
+        elif choice == '5':
             break
         else:
             print('Invalid input.\n')

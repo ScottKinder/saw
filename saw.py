@@ -133,3 +133,12 @@ def print_run_state(state):
                     print('Result: ' + result + '\n')
                 except:
                     print(state[minion][0] + '\n')
+
+def test_target(auth_token, target, url='http://salt-master'):
+    '''
+    tests which minions will match a target expression
+    '''
+    headers = {'Accept': 'application/x-yaml', 'X-Auth-Token': auth_token }
+    data = {'client': 'local', 'tgt': target, 'fun': 'test.ping'}
+    r = requests.post(url, headers=headers, data=data)
+    return r.content
