@@ -8,13 +8,19 @@ def main():
     user = None
     while True:
         #os.system('clear')
-        print('1. View connected minions')
-        print('2. Run command')
-        print('3. Run state')
-        print('4. Test targeting')
-        print('5. Exit\n\n')
+        print('1. Get auth token')
+        print('2. View connected minions')
+        print('3. Run command')
+        print('4. Run state')
+        print('5. Test targeting')
+        print('6. Exit\n\n')
         choice = raw_input('Enter your choice: ')
         if choice == '1':
+            if not user:
+                user = user_session()
+            if not user.auth_token:
+                user.set_auth_token()
+        elif choice == '2':
             if not user:
                 user = user_session()
             if not user.auth_token:
@@ -22,13 +28,15 @@ def main():
             minions = get_minions(user.auth_token)
             print_minions(minions)
             break
-        elif choice == '2':
+        elif choice == '3':
             command = raw_input('Command to run: ')
             target = raw_input('Target: ')
             print
             if not user:
                 user = user_session()
-            cmdrun = cmd_run(user.user_name, target, command)
+            if not user.auth_token:
+                user.set_auth_token()
+            cmdrun = cmd_run(user.auth_token, target, command)
             print
             print_cmd_run(cmdrun)
             break
@@ -38,7 +46,9 @@ def main():
             print
             if not user:
                 user = user_session()
-            states = run_state(user.user_name, target, state)
+            if not user.auth_token:
+                user.set_auth_token()
+            states = run_state(user.auth_token, target, state)
             print
             print_run_state(states)
             break
