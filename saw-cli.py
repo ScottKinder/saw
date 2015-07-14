@@ -1,4 +1,4 @@
-mport os
+import os
 import sys
 sys.path.append(os.getcwd())
 from saw import *
@@ -31,14 +31,14 @@ def main():
             print_cmd_run(returns)
             break
         elif choice == '3':
-            command = raw_input('state to run: ')
+            state = raw_input('state to run: ')
             target = raw_input('target: ')
             print
             if not user:
                 user = user_session()
             returns = run_state(user.user_name, target, state)
             print
-            print_cmd_run(returns)
+            print_run_state(returns)
             break
         elif choice == '4':
             break
