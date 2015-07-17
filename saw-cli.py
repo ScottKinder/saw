@@ -8,7 +8,6 @@ def main():
     os.system('clear')
     user = user_session()
     user.set_auth_token()
-    user = None
     while True:
         print('1. View connected minions')
         print('2. Run command')
