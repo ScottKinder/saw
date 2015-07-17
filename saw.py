@@ -51,7 +51,7 @@ def cmd_run(user, target, cmd, user_pass=None):
     if not user_pass:
         data = {'username': user, 'tgt': target, 'client': 'local', 'eauth': 'pam', 'password': get_pw(), 'fun': 'cmd.run', 'arg': cmd }
     else:
-        data = {'username': user, 'tgt': target, 'client': 'local', 'eauth': 'pam', 'password': user_pass, 'fun': 'cmd.run', 'arg': cmd }
+        data = {'username': user, 'tgt': target, 'client': 'local', 'eauth': 'pam', 'password': user_pass, 'fun': 'cmd.run', 'arg': cmd}
 
     r = requests.post(url, data=data)
 
@@ -69,7 +69,7 @@ def token_cmd_run(auth_token, target, cmd, url=base_url):
     cmd(str). Returns dict of results per minion.
     '''
     headers = {'Accept': 'application/x-yaml', 'X-Auth-Token': auth_token}
-    data = {'tgt': target, 'client': 'local', 'fun': 'cmd.run', 'arg': cmd }
+    data = {'tgt': target, 'client': 'local', 'fun': 'cmd.run', 'arg': cmd}
     
     r = requests.post(url, headers=headers, data=data)
     
@@ -122,14 +122,14 @@ def run_state(user, target, state, url=base_url, pillar=None, user_pass=None):
     url += '/run'
     if not user_pass:
         if pillar:
-            data = {'username': user, 'tgt': target, 'client': 'local', 'eauth': 'pam', 'password': get_pw(), 'fun': 'state.sls', 'arg': [state, pillar] }
+            data = {'username': user, 'tgt': target, 'client': 'local', 'eauth': 'pam', 'password': get_pw(), 'fun': 'state.sls', 'arg': [state, pillar]}
         else:
             data = {'username': user, 'tgt': target, 'client': 'local', 'eauth': 'pam', 'password': get_pw(), 'fun': 'state.sls', 'arg': [state] }
     else:
         if pillar:
-            data = {'username': user, 'tgt': target, 'client': 'local', 'eauth': 'pam', 'password': user_pass, 'fun': 'state.sls', 'arg': [state, pillar] }
+            data = {'username': user, 'tgt': target, 'client': 'local', 'eauth': 'pam', 'password': user_pass, 'fun': 'state.sls', 'arg': [state, pillar]}
         else:
-            data = {'username': user, 'tgt': target, 'client': 'local', 'eauth': 'pam', 'password': user_pass, 'fun': 'state.sls', 'arg': [state] }
+            data = {'username': user, 'tgt': target, 'client': 'local', 'eauth': 'pam', 'password': user_pass, 'fun': 'state.sls', 'arg': [state]}
 
     r = requests.post(url, data=data)
 
@@ -148,9 +148,9 @@ def token_run_state(auth_token, target, state, url=base_url, pillar=None):
     '''
     headers = {'Accept': 'application/x-yaml', 'X-Auth-Token': auth_token}
     if pillar:
-        data = {'tgt': target, 'client': 'local', 'fun': 'state.sls', 'arg': [state, pillar] }
+        data = {'tgt': target, 'client': 'local', 'fun': 'state.sls', 'arg': [state, pillar]}
     else:
-        data = {'tgt': target, 'client': 'local', 'fun': 'state.sls', 'arg': [state] }
+        data = {'tgt': target, 'client': 'local', 'fun': 'state.sls', 'arg': [state]}
     
     r = requests.post(url, headers=headers, data=data)
     
@@ -183,7 +183,7 @@ def test_target(auth_token, target, url=base_url):
     '''
     tests which minions will match a target expression
     '''
-    headers = {'Accept': 'application/x-yaml', 'X-Auth-Token': auth_token }
+    headers = {'Accept': 'application/x-yaml', 'X-Auth-Token': auth_token}
     data = {'client': 'local', 'tgt': target, 'fun': 'test.ping'}
     r = requests.post(url, headers=headers, data=data)
     return r.content
