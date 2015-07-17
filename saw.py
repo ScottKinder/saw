@@ -2,6 +2,8 @@ from getpass import getpass
 import re
 import requests
 
+base_url = 'http://salt-master'
+
 class user_session:
     def __init__(self, user_name=None):
         '''
@@ -14,17 +16,18 @@ class user_session:
         else:
             self.user_name = user_name
 
-    def set_auth_token(self, user_pass=None):
+    def set_auth_token(self, user_pass=None, url=base_url):
         '''
         sets instance variable for auth_token that allows x-auth-token header
         authentication with salt-api. Optionally takes user_pass(str).
         '''
+        url += '/login'
         if not user_pass:
             data = {'username': self.user_name, 'password': get_pw(), 'eauth': 'pam'}
         else:
             data = {'username': self.user_name, 'password': user_pass, 'eauth': 'pam'}
 
-        r = requests.post('http://salt-master/login', data=data)
+        r = requests.post(url, data=data)
 
         try:
             self.auth_token = r.headers['x-auth-token']
@@ -38,24 +41,43 @@ def get_pw():
     '''
     return getpass('Kerberos password: ')
 
-def cmd_run(user, target, cmd, silent=True, user_pass=None):
+def cmd_run(user, target, cmd, user_pass=None):
     '''
-    Runs cmd.run from state parameter. Takes user(str), target(str),
-    cmd(str). Optionally takes silent(bool) and user_pass(str).
+    Runs cmd.run from cmd parameter. Takes user(str), target(str),
+    cmd(str). Optionally takes user_pass(str).
     Returns dict of results per minion.
     '''
+    url = base_url + '/run'
     if not user_pass:
         data = {'username': user, 'tgt': target, 'client': 'local', 'eauth': 'pam', 'password': get_pw(), 'fun': 'cmd.run', 'arg': cmd }
     else:
         data = {'username': user, 'tgt': target, 'client': 'local', 'eauth': 'pam', 'password': user_pass, 'fun': 'cmd.run', 'arg': cmd }
 
-    r = requests.post("http://salt-master/run", data=data)
+    r = requests.post(url, data=data)
 
     if r.status_code != 200:
         return 'Auth or other error.'
+        print(r.status_code)
+        print(r.content)
     else:
         returns = r.json()['return'][0]
         return returns
+
+def token_cmd_run(auth_token, target, cmd, url=base_url):
+    '''
+    Runs cmd.run from state parameter. Takes user(str), target(str),
+    cmd(str). Returns dict of results per minion.
+    '''
+    headers = {'Accept': 'application/x-yaml', 'X-Auth-Token': auth_token}
+    data = {'tgt': target, 'client': 'local', 'fun': 'cmd.run', 'arg': cmd }
+    
+    r = requests.post(url, headers=headers, data=data)
+    
+    if r.status_code != 200:
+        return 'Auth or other error.'
+    else:
+        #returns = r.json()['return'][0]
+        return r.content
 
 def print_cmd_run(cmd):
     '''
@@ -69,11 +91,12 @@ def print_cmd_run(cmd):
             print(cmd[minion] + '\n')
             print('-' * 10 + '\n')
 
-def get_minions(auth_token, url='http://salt-master/minions'):
+def get_minions(auth_token, url=base_url):
     '''
     returns dict of minions that were connected when function was run, uses
     x-auth-token header value for authentication.
     '''
+    url += '/minions'
     headers = {'X-Auth-Token': auth_token}
     r = requests.get(url, headers=headers)
     minions = r.json()['return'][0]
@@ -89,13 +112,14 @@ def print_minions(minions):
         print('  Kernel release: %s\n') % minions[minion]['kernelrelease']
     print('-' * 10 + '\n')
 
-def run_state(user, target, state, url='http://salt-master/run', pillar=None, user_pass=None):
+def run_state(user, target, state, url=base_url, pillar=None, user_pass=None):
     '''
     runs a state.sls where target is the path to the state. pillar can be a string
     in the form of pillar='pillar={"value1": "string"}'.
     returns dict with return information from the salt-api about the states run
     from the state file specified.
     '''
+    url += '/run'
     if not user_pass:
         if pillar:
             data = {'username': user, 'tgt': target, 'client': 'local', 'eauth': 'pam', 'password': get_pw(), 'fun': 'state.sls', 'arg': [state, pillar] }
@@ -114,6 +138,27 @@ def run_state(user, target, state, url='http://salt-master/run', pillar=None, us
     else:
         results = r.json()['return'][0]
         return results
+
+def token_run_state(auth_token, target, state, url=base_url, pillar=None):
+    '''
+    runs a state.sls where target is the path to the state. pillar can be a string
+    in the form of pillar='pillar={"value1": "string"}'.
+    returns dict with return information from the salt-api about the states run
+    from the state file specified.
+    '''
+    headers = {'Accept': 'application/x-yaml', 'X-Auth-Token': auth_token}
+    if pillar:
+        data = {'tgt': target, 'client': 'local', 'fun': 'state.sls', 'arg': [state, pillar] }
+    else:
+        data = {'tgt': target, 'client': 'local', 'fun': 'state.sls', 'arg': [state] }
+    
+    r = requests.post(url, headers=headers, data=data)
+    
+    if r.status_code != 200:
+        return 'Auth or other error.'
+    else:
+        #results = r.json()['return'][0]
+        return r.content
 
 def print_run_state(state):
     '''
@@ -134,7 +179,7 @@ def print_run_state(state):
                 except:
                     print(state[minion][0] + '\n')
 
-def test_target(auth_token, target, url='http://salt-master'):
+def test_target(auth_token, target, url=base_url):
     '''
     tests which minions will match a target expression
     '''
