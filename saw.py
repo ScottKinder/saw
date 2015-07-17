@@ -39,7 +39,7 @@ def get_pw():
     '''
     prompt for password as needed
     '''
-    return getpass('Kerberos password: ')
+    return getpass('Enter password: ')
 
 def cmd_run(user, target, cmd, user_pass=None):
     '''
