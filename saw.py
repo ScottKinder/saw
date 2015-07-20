@@ -56,12 +56,9 @@ def cmd_run(user, target, cmd, user_pass=None):
     r = requests.post(url, data=data)
 
     if r.status_code != 200:
-        return 'Auth or other error.'
-        print(r.status_code)
-        print(r.content)
+        return 'Status code ' + str(r.status_code)  + ', something went wrong.\n'
     else:
-        returns = r.json()['return'][0]
-        return returns
+        return r.json()['return'][0]
 
 def token_cmd_run(auth_token, target, cmd, url=base_url):
     '''
