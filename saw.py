@@ -71,7 +71,7 @@ def token_cmd_run(auth_token, target, cmd, url=base_url):
     r = requests.post(url, headers=headers, data=data)
     
     if r.status_code != 200:
-        return 'Auth or other error.'
+        return 'Status code ' + str(r.status_code)  + ', something went wrong.\n'
     else:
         return r.content
 
@@ -130,7 +130,7 @@ def run_state(user, target, state, url=base_url, pillar=None, user_pass=None):
     r = requests.post(url, data=data)
 
     if r.status_code != 200:
-        return 'Auth or other error.'
+        return 'Status code ' + str(r.status_code)  + ', something went wrong.\n'
     else:
         results = r.json()['return'][0]
         return results
@@ -151,7 +151,7 @@ def token_run_state(auth_token, target, state, url=base_url, pillar=None):
     r = requests.post(url, headers=headers, data=data)
     
     if r.status_code != 200:
-        return 'Auth or other error.'
+        return 'Status code ' + str(r.status_code)  + ', something went wrong.\n'
     else:
         return r.content
 
