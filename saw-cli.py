@@ -3,6 +3,7 @@ import sys
 sys.path.append(os.getcwd())
 from saw import *
 
+
 def main():
     os.system('clear')
     user = user_session()
