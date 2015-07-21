@@ -11,8 +11,9 @@ def main():
         print('1. View connected minions')
         print('2. Run command')
         print('3. Run state')
-        print('4. Test targeting')
-        print('5. Exit\n')
+        print('4. Test target')
+        print('5. Print auth token')
+        print('6. Exit\n')
         print('Press \'c\' to clear the screen\n\n')
         choice = raw_input('Enter your choice: ')
         if choice == '1':
@@ -44,6 +45,8 @@ def main():
             test = test_target(user.auth_token, target)
             print('\n' + test)
         elif choice == '5':
+            print('\nAuth token: ' + user.auth_token + '\n')
+        elif choice == '6':
             break
         else:
             print('Invalid input.\n')
