@@ -41,7 +41,7 @@ def get_pw():
     '''
     return getpass('Enter password: ')
 
-def cmd_run(user, target, cmd, user_pass=None):
+def cmd_run(user, target, cmd, url=base_url, user_pass=None):
     '''
     Runs cmd.run from cmd parameter. Takes user(str), target(str),
     cmd(str). Optionally takes user_pass(str).
@@ -73,7 +73,6 @@ def token_cmd_run(auth_token, target, cmd, url=base_url):
     if r.status_code != 200:
         return 'Auth or other error.'
     else:
-        #returns = r.json()['return'][0]
         return r.content
 
 def print_cmd_run(cmd):
@@ -154,7 +153,6 @@ def token_run_state(auth_token, target, state, url=base_url, pillar=None):
     if r.status_code != 200:
         return 'Auth or other error.'
     else:
-        #results = r.json()['return'][0]
         return r.content
 
 def print_run_state(state):
