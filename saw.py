@@ -24,18 +24,24 @@ class user_session:
         authentication with salt-api. Optionally takes user_pass(str).
         '''
         url += '/login'
-        if not user_pass:
-            data = {'username': self.user_name, 'password': get_pw(), 'eauth': 'pam'}
-        else:
-            data = {'username': self.user_name, 'password': user_pass, 'eauth': 'pam'}
+        data = {}
+        data['username'] = self.user_name
+        data['eauth']    = 'pam'
 
-        r = requests.post(url, data=data)
+        if not user_pass:
+            data['password'] = get_pw()
+        else:
+            data['password'] = user_pass
+
+        r = requests.post(url, data=data, verify=False)
 
         try:
             self.auth_token = r.headers['x-auth-token']
-            self.auth_expiry = re.search(r'expires=(.*);', r.headers['set-cookie']).group(1)
+            self.auth_expiry = re.search(
+                r'expires=(.*);', 
+                r.headers['set-cookie']).group(1)
         except:
-                print('Auth error.')
+            print('Auth error.')
 
 
 def get_pw():
@@ -52,12 +58,20 @@ def cmd_run(user, target, cmd, url=base_url, user_pass=None):
     Returns dict of results per minion.
     '''
     url = base_url + '/run'
+    data = {}
+    data['username'] = user
+    data['tgt']      = target
+    data['client']   = 'local'
+    data['eauth']    = 'pam'
+    data['password'] = None
+    data['fun']      = 'cmd.run'
+    data['arg']      = cmd
     if not user_pass:
-        data = {'username': user, 'tgt': target, 'client': 'local', 'eauth': 'pam', 'password': get_pw(), 'fun': 'cmd.run', 'arg': cmd}
+        data['password'] = get_pw()
     else:
-        data = {'username': user, 'tgt': target, 'client': 'local', 'eauth': 'pam', 'password': user_pass, 'fun': 'cmd.run', 'arg': cmd}
+        data['password'] = user_pass
 
-    r = requests.post(url, data=data)
+    r = requests.post(url, data=data, verify=False)
 
     if r.status_code != 200:
         return 'Status code ' + str(r.status_code) + ', something went wrong.\n'
@@ -73,7 +87,7 @@ def token_cmd_run(auth_token, target, cmd, url=base_url):
     headers = {'Accept': 'application/x-yaml', 'X-Auth-Token': auth_token}
     data = {'tgt': target, 'client': 'local', 'fun': 'cmd.run', 'arg': cmd}
 
-    r = requests.post(url, headers=headers, data=data)
+    r = requests.post(url, headers=headers, data=data, verify=False)
 
     if r.status_code != 200:
         return 'Status code ' + str(r.status_code) + ', something went wrong.\n'
@@ -101,7 +115,7 @@ def get_minions(auth_token, url=base_url):
     '''
     url += '/minions'
     headers = {'X-Auth-Token': auth_token}
-    r = requests.get(url, headers=headers)
+    r = requests.get(url, headers=headers, verify=False)
     minions = r.json()['return'][0]
     return minions
 
@@ -119,52 +133,64 @@ def print_minions(minions):
 
 def run_state(user, target, state, url=base_url, pillar=None, user_pass=None):
     '''
-    runs a state.sls where target is the path to the state. pillar can be a string
-    in the form of pillar='pillar={"value1": "string"}'.
-    returns dict with return information from the salt-api about the states run
-    from the state file specified.
+    runs a state.sls where target is the path to the state. pillar can be a
+string in the form of pillar='pillar={"value1": "string"}'. returns dict with
+return information from the salt-api about the states run from the state file
+specified.
     '''
     url += '/run'
+    data = {}
+    data['username'] = user
+    data['tgt']      = target
+    data['client']   = 'local'
+    data['eauth']    = 'pam'
+    data['password'] = None
+    data['fun']      = 'cmd.run'
+    data['arg']      = None
+    
     if not user_pass:
-        if pillar:
-            data = {'username': user, 'tgt': target, 'client': 'local', 'eauth': 'pam', 'password': get_pw(), 'fun': 'state.sls', 'arg': [state, pillar]}
-        else:
-            data = {'username': user, 'tgt': target, 'client': 'local', 'eauth': 'pam', 'password': get_pw(), 'fun': 'state.sls', 'arg': [state]}
+        data['password'] = get_pw()
     else:
-        if pillar:
-            data = {'username': user, 'tgt': target, 'client': 'local', 'eauth': 'pam', 'password': user_pass, 'fun': 'state.sls', 'arg': [state, pillar]}
-        else:
-            data = {'username': user, 'tgt': target, 'client': 'local', 'eauth': 'pam', 'password': user_pass, 'fun': 'state.sls', 'arg': [state]}
-
-    r = requests.post(url, data=data)
-
+        data['password'] = user_pass
+    
+    if pillar:
+        data['arg'] = [state,pillar]
+    else:
+        data['arg'] = [state]
+    
+    r = requests.post(url, data=data, verify=False)
+    
     if r.status_code != 200:
         return 'Status code ' + str(r.status_code) + ', something went wrong.\n'
     else:
         results = r.json()['return'][0]
         return results
 
-
 def token_run_state(auth_token, target, state, url=base_url, pillar=None):
     '''
-    runs a state.sls where target is the path to the state. pillar can be a string
-    in the form of pillar='pillar={"value1": "string"}'.
-    returns dict with return information from the salt-api about the states run
-    from the state file specified.
+    runs a state.sls where target is the path to the state. pillar can be a
+string in the form of pillar='pillar={"value1": "string"}'.  returns dict with
+return information from the salt-api about the states run from the state file
+specified.
     '''
     headers = {'Accept': 'application/x-yaml', 'X-Auth-Token': auth_token}
+    data = {}
+    data['tgt']    = target
+    data['client'] = 'local'
+    data['fun']    = 'state.sls'
+    data['arg']    = None
+    
     if pillar:
-        data = {'tgt': target, 'client': 'local', 'fun': 'state.sls', 'arg': [state, pillar]}
+        data['arg'] = [state, pillar]
     else:
-        data = {'tgt': target, 'client': 'local', 'fun': 'state.sls', 'arg': [state]}
-
-    r = requests.post(url, headers=headers, data=data)
-
+        data['arg'] = [state]
+    
+    r = requests.post(url, headers=headers, data=data, verify=False)
+    
     if r.status_code != 200:
         return 'Status code ' + str(r.status_code) + ', something went wrong.\n'
     else:
         return r.content
-
 
 def print_run_state(state):
     '''

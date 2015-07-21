@@ -17,22 +17,22 @@ def main():
         print('5. Print auth token')
         print('6. Exit\n')
         print('Press \'c\' to clear the screen\n\n')
-        choice = raw_input('Enter your choice: ')
+        choice = input('Enter your choice: ')
         if choice == '1':
             if not user.auth_token:
                 user.set_auth_token()
             minions = get_minions(user.auth_token)
             print_minions(minions)
         elif choice == '2':
-            command = raw_input('Command to run: ')
-            target = raw_input('Target: ')
+            command = input('Command to run: ')
+            target = input('Target: ')
             print
             cmdrun = cmd_run(user.user_name, target, command)
             print
             print_cmd_run(cmdrun)
         elif choice == '3':
-            state = raw_input('State to run: ')
-            target = raw_input('Target: ')
+            state = input('State to run: ')
+            target = input('Target: ')
             if not user.auth_token:
                 user.set_auth_token()
             print
@@ -40,7 +40,7 @@ def main():
             print
             print_run_state(states)
         elif choice == '4':
-            target = raw_input('Target: ')
+            target = input('Target: ')
             print
             if not user.auth_token:
                 user.set_auth_token()
