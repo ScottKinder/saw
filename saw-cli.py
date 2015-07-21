@@ -47,7 +47,8 @@ def main():
             test = test_target(user.auth_token, target)
             print('\n' + test)
         elif choice == '5':
-            print('\nAuth token: ' + user.auth_token + '\n')
+            print('\nAuth token: ' + user.auth_token)
+            print('Token expiry: ' + user.auth_expiry + '\n')
         elif choice == '6':
             break
         else:
