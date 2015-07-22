@@ -33,7 +33,7 @@ class user_session:
         else:
             data['password'] = user_pass
 
-        r = requests.post(url, data=data)
+        r = requests.post(url, data=data, verify=False)
 
         try:
             self.auth_token = r.headers['x-auth-token']
@@ -71,7 +71,7 @@ def cmd_run(user, target, cmd, url=base_url, user_pass=None):
     else:
         data['password'] = user_pass
 
-    r = requests.post(url, data=data)
+    r = requests.post(url, data=data, verify=False)
 
     if r.status_code != 200:
         return 'Status code ' + str(r.status_code) + ', something went wrong.\n'
@@ -87,7 +87,7 @@ def token_cmd_run(auth_token, target, cmd, url=base_url):
     headers = {'Accept': 'application/x-yaml', 'X-Auth-Token': auth_token}
     data = {'tgt': target, 'client': 'local', 'fun': 'cmd.run', 'arg': cmd}
 
-    r = requests.post(url, headers=headers, data=data)
+    r = requests.post(url, headers=headers, data=data, verify=False)
 
     if r.status_code != 200:
         return 'Status code ' + str(r.status_code) + ', something went wrong.\n'
@@ -115,7 +115,7 @@ def get_minions(auth_token, url=base_url):
     '''
     url += '/minions'
     headers = {'X-Auth-Token': auth_token}
-    r = requests.get(url, headers=headers)
+    r = requests.get(url, headers=headers, verify=False)
     minions = r.json()['return'][0]
     return minions
 
@@ -158,7 +158,7 @@ specified.
     else:
         data['arg'] = [state]
 
-    r = requests.post(url, data=data)
+    r = requests.post(url, data=data, verify=False)
 
     if r.status_code != 200:
         return 'Status code ' + str(r.status_code) + ', something went wrong.\n'
@@ -186,7 +186,7 @@ specified.
     else:
         data['arg'] = [state]
 
-    r = requests.post(url, headers=headers, data=data)
+    r = requests.post(url, headers=headers, data=data, verify=False)
 
     if r.status_code != 200:
         return 'Status code ' + str(r.status_code) + ', something went wrong.\n'
@@ -220,5 +220,5 @@ def test_target(auth_token, target, url=base_url):
     '''
     headers = {'Accept': 'application/x-yaml', 'X-Auth-Token': auth_token}
     data = {'client': 'local', 'tgt': target, 'fun': 'test.ping'}
-    r = requests.post(url, headers=headers, data=data)
+    r = requests.post(url, headers=headers, data=data, verify=False)
     return r.content
