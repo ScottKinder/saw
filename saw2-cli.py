@@ -52,7 +52,7 @@ def main():
         elif choice == '6':
             break
         else:
-            print('Invalid raw_input.\n')
+            print('Invalid input.\n')
             time.sleep(2)
 
 if __name__ == '__main__':
