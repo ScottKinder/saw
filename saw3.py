@@ -220,5 +220,5 @@ def test_target(auth_token, target, url=base_url):
     '''
     headers = {'Accept': 'application/x-yaml', 'X-Auth-Token': auth_token}
     data = {'client': 'local', 'tgt': target, 'fun': 'test.ping'}
-    r = requests.post(url, headers=headers, data=data)
+    r = requests.post(url, headers=headers, data=data, verify=False)
     return r.content
