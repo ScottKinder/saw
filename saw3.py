@@ -14,7 +14,7 @@ class user_session:
         self.auth_token = None
 
         if not user_name:
-            self.user_name = raw_input('Username: ')
+            self.user_name = input('Username: ')
         else:
             self.user_name = user_name
 
@@ -38,7 +38,7 @@ class user_session:
         try:
             self.auth_token = r.headers['x-auth-token']
             self.auth_expiry = re.search(
-                r'expires=(.*);', 
+                r'expires=(.*);',
                 r.headers['set-cookie']).group(1)
         except:
             print('Auth error.')
@@ -147,24 +147,25 @@ specified.
     data['password'] = None
     data['fun']      = 'cmd.run'
     data['arg']      = None
-    
+
     if not user_pass:
         data['password'] = get_pw()
     else:
         data['password'] = user_pass
-    
+
     if pillar:
-        data['arg'] = [state,pillar]
+        data['arg'] = [state, pillar]
     else:
         data['arg'] = [state]
-    
+
     r = requests.post(url, data=data, verify=False)
-    
+
     if r.status_code != 200:
         return 'Status code ' + str(r.status_code) + ', something went wrong.\n'
     else:
         results = r.json()['return'][0]
         return results
+
 
 def token_run_state(auth_token, target, state, url=base_url, pillar=None):
     '''
@@ -179,18 +180,19 @@ specified.
     data['client'] = 'local'
     data['fun']    = 'state.sls'
     data['arg']    = None
-    
+
     if pillar:
         data['arg'] = [state, pillar]
     else:
         data['arg'] = [state]
-    
+
     r = requests.post(url, headers=headers, data=data, verify=False)
-    
+
     if r.status_code != 200:
         return 'Status code ' + str(r.status_code) + ', something went wrong.\n'
     else:
         return r.content
+
 
 def print_run_state(state):
     '''
