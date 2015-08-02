@@ -92,7 +92,7 @@ def token_cmd_run(auth_token, target, cmd, url=base_url):
     if r.status_code != 200:
         return 'Status code ' + str(r.status_code) + ', something went wrong.\n'
     else:
-        return r.content
+        return r.text
 
 
 def print_cmd_run(cmd):
