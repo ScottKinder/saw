@@ -92,7 +92,7 @@ def token_cmd_run(auth_token, target, cmd, url=base_url):
     if r.status_code != 200:
         return 'Status code ' + str(r.status_code) + ', something went wrong.\n'
     else:
-        return r.content
+        return r.text
 
 
 def print_cmd_run(cmd):
@@ -191,14 +191,14 @@ specified.
     if r.status_code != 200:
         return 'Status code ' + str(r.status_code) + ', something went wrong.\n'
     else:
-        return r.content
+        return r.text
 
 
 def print_run_state(state):
     '''
     prints dict from run_state function
     '''
-    if type(state) == str:
+    if type(state) == str or type(state) == unicode:
         print(state)
     else:
         for minion in state:
@@ -221,4 +221,4 @@ def test_target(auth_token, target, url=base_url):
     headers = {'Accept': 'application/x-yaml', 'X-Auth-Token': auth_token}
     data = {'client': 'local', 'tgt': target, 'fun': 'test.ping'}
     r = requests.post(url, headers=headers, data=data, verify=False)
-    return r.content
+    return r.text
