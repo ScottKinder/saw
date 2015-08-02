@@ -201,7 +201,7 @@ def print_run_state(state):
     '''
     prints dict from run_state function
     '''
-    if type(state) == str:
+    if type(state) == str or type(state) == unicode:
         print(state)
     else:
         for minion in state:
