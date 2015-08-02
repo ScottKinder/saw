@@ -1,6 +1,5 @@
 # TODO: Find a better way to pass pillar data to cmd.run, if there is one
 from getpass import getpass
-from pprint import pprint
 import re
 import requests
 
