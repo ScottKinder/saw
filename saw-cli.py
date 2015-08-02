@@ -51,6 +51,8 @@ def main():
             print('Token expiry: ' + user.auth_expiry + '\n')
         elif choice == '6':
             break
+        elif choice == 'c':
+            os.system('clear')
         else:
             print('Invalid input.\n')
             time.sleep(2)
