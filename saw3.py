@@ -1,5 +1,6 @@
 # TODO: Find a better way to pass pillar data to cmd.run, if there is one
 from getpass import getpass
+from pprint import pprint
 import re
 import requests
 
@@ -127,7 +128,9 @@ def print_minions(minions):
     print('Registered minions:\n')
     for minion in minions:
         print('* ' + minion)
-        print('  Kernel release: %s\n') % minions[minion]['kernelrelease']
+        #print('  Kernel release: %s\n') % minions[minion]['kernelrelease']
+        #print('Kernel release: ' + minions[minion]['kernelrelease'])
+        '    Kernel release: {}'.format(minions[minion]['kernelrelease'])
     print('-' * 10 + '\n')
 
 
@@ -191,7 +194,7 @@ specified.
     if r.status_code != 200:
         return 'Status code ' + str(r.status_code) + ', something went wrong.\n'
     else:
-        return r.content
+        return r.text
 
 
 def print_run_state(state):
@@ -221,4 +224,4 @@ def test_target(auth_token, target, url=base_url):
     headers = {'Accept': 'application/x-yaml', 'X-Auth-Token': auth_token}
     data = {'client': 'local', 'tgt': target, 'fun': 'test.ping'}
     r = requests.post(url, headers=headers, data=data, verify=False)
-    return r.content
+    return r.text
