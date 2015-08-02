@@ -128,9 +128,7 @@ def print_minions(minions):
     print('Registered minions:\n')
     for minion in minions:
         print('* ' + minion)
-        #print('  Kernel release: %s\n') % minions[minion]['kernelrelease']
-        #print('Kernel release: ' + minions[minion]['kernelrelease'])
-        '    Kernel release: {}'.format(minions[minion]['kernelrelease'])
+        print('  Kernel release: ' + minions[minion]['kernelrelease'])
     print('-' * 10 + '\n')
 
 
