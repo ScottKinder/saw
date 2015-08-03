@@ -99,7 +99,7 @@ def print_cmd_run(cmd):
     '''
     prints returned dict from cmd_run function
     '''
-    if type(cmd) == str:
+    if type(cmd) == str or type(cmd) == unicode:
         print(cmd)
     else:
         for minion in cmd:
